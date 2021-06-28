@@ -9,101 +9,102 @@ using UnityEngine;
 namespace Com.Reseul.ASA.Samples.WayFindings.SpatialAnchors
 {
     /// <summary>
-    ///     Azure Spatial Anchorsの処理を実行するための管理クラスに実装すインターフェース
+    ///     Interface implemented in management class to execute Azure Spatial Anchors processing
     /// </summary>
     public interface IAnchorModuleScript
     {
         /// <summary>
-        ///     アンカー取得後に実行する個別処理を持つコントローラクラス
+        ///    Controller class with individual processing to be executed after anchor acquisition
         /// </summary>
         IASACallBackManager CallBackManager { set; get; }
 
         /// <summary>
-        ///     初期化処理を実施します
+        ///     Perform initialization processing
         /// </summary>
         void Start();
 
         /// <summary>
-        ///     フレーム毎に実行する処理を実施します。
+        ///     Performs the process to be executed for each frame.
         /// </summary>
         void Update();
 
         /// <summary>
-        ///     オブジェクトの後処理（廃棄）を実施します。
+        ///     Performs post-processing (discard) of the object.
         /// </summary>
         void OnDestroy();
 
         /// <summary>
-        ///     Azure Spatial Anchorsサービスとの接続を行い、セションを開始します。
+        ///     Connect to the Azure Spatial Anchors service and start the session.
         /// </summary>
         /// <returns></returns>
         Task StartAzureSession();
 
         /// <summary>
-        ///     Azure Spatial Anchorsサービスとの接続を停止します。
+        ///     Stops the connection with the zure Spatial Anchors service.
         /// </summary>
         /// <returns></returns>
         Task StopAzureSession();
 
         /// <summary>
-        ///     Azure Spatial Anchorsから取得済みのSpatial AnchorのAppPropertiesを一括で変更します。
-        ///     キーがすでに存在する場合はreplaceパラメータの値に応じて置換え、追記を切り替えて処理を実施します。
+        ///     Change the App Properties of Spatial Anchor obtained from Azure Spatial Anchors at once.
+        ///     If the key already exists, it will be replaced according to
+        ///     the value of the replace parameter, and the appending will be switched to perform the process.
         /// </summary>
-        /// <param name="key">AppPropertiesのキー</param>
-        /// <param name="val">キーに対応する値</param>
-        /// <param name="replace">true:上書き、false:カンマ区切りで追記</param>
+        /// <param name="key">AppProperties keyー</param>
+        /// <param name="val">The value corresponding to the key</param>
+        /// <param name="replace">true: overwrite, false: comma separated</param>
         void UpdatePropertiesAll(string key, string val, bool replace = true);
 
         /// <summary>
-        ///     Spatial Anchorの検索範囲を設定します。
+        ///     Sets the search range for Spatial Anchor.
         /// </summary>
-        /// <param name="distanceInMeters">検索範囲（単位:m）</param>
+        /// <param name="distanceInMeters">Search range (unit: m)</param>
         void SetDistanceInMeters(float distanceInMeters);
 
         /// <summary>
-        ///     Spatial Anchorの同時検索数を設定します。
+        ///     Sets the number of simultaneous searches for Spatial Anchor.
         /// </summary>
         /// <param name="distanceInMeters">検索数</param>
         void SetMaxResultCount(int maxResultCount);
 
         /// <summary>
-        ///     Spatial Anchorの寿命を設定します
+        ///     Sets the life of the Spatial Anchor
         /// </summary>
-        /// <param name="expiration">Anchorの登録期間（単位:日）</param>
+        /// <param name="expiration">Anchor registration period (unit: days)</param>
         void SetExpiration(int expiration);
 
         /// <summary>
-        ///     Azure Spatial Anchorsサービスにアンカーを追加します。
+        ///    Add an anchor to the Azure Spatial Anchors service.
         /// </summary>
-        /// <param name="theObject">Spatial Anchorの情報として登録する現実空間に設置したオブジェクト</param>
-        /// <param name="appProperties">Spatial Anchorに含める情報</param>
-        /// <returns>登録時のAnchorId</returns>
+        /// <param name="theObject">Objects installed in real space to be registered as Spatial Anchor information</param>
+        /// <param name="appProperties">Information to include in Spatial Anchor</param>
+        /// <returns>AnchorId at the time of registration</returns>
         Task<string> CreateAzureAnchor(GameObject theObject, IDictionary<string, string> appProperties);
 
         /// <summary>
-        ///     指定されたAnchorIdで登録されたAnchorを中心に他のアンカーが存在するか検索を実施します。
+        ///     Searches for the existence of other anchors centered on the Anchor registered with the specified AnchorId.
         /// </summary>
-        /// <param name="anchorId">基準になるAnchorId</param>
+        /// <param name="anchorId">Reference AnchorId</param>
         void FindNearByAnchor(string anchorId);
 
         /// <summary>
-        ///     指定されたAnchorIdで登録されたAnchorを中心に他のアンカーが存在するか検索を実施します。
+        ///     Searches for the existence of other anchors centered on the Anchor registered with the specified AnchorId.
         /// </summary>
-        /// <param name="anchorId">基準になるAnchorId</param>
+        /// <param name="anchorId">Reference AnchorId</param>
         void FindAzureAnchorById(params string[] azureAnchorIds);
 
         /// <summary>
-        ///     Azure Spatial Anchorsサービスから取得済みのすべてのアンカーを削除します。
+        ///     Remove all acquired anchors from the Azure Spatial Anchors service.
         /// </summary>
         void DeleteAllAzureAnchor();
 
         /// <summary>
-        ///     処理状況を出力するイベント
+        ///     拾vent to output the processing status
         /// </summary>
         event AnchorModuleProxy.FeedbackDescription OnFeedbackDescription;
 
         /// <summary>
-        ///     Anchor生成処理を実行するためのコントローラを設定します。
+        ///     Set the controller to execute the Anchor generation process.
         /// </summary>
         /// <param name="iasaCallBackManager"></param>
         void SetASACallBackManager(IASACallBackManager iasaCallBackManager);

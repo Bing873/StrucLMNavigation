@@ -165,11 +165,16 @@ namespace Com.Reseul.ASA.Samples.WayFindings
         /// </summary>
         public void DeleteAnchorObject()
         {
-           // var prevObject = currentLinkLine.FromPoint;
-           // DestroyImmediate(currentLinkLine.gameObject);
+
             DestroyImmediate(currentAnchorObject);
-           // currentAnchorObject = prevObject;
+           // Menu.ChangeStatus(BaseMenu.MODE_COMPLETE);
             Menu.ChangeStatus(BaseMenu.MODE_INITIALIZE);
+        }
+        public void NextStepRouteCreate()
+        {
+            CloseContents();
+            Menu.ChangeStatus(BaseMenu.MODE_CLOSE);
+            SetRouteGuideManager.Instance.Initialize(true, basePointAnchorId, settingPointAnchor, basePointAppProperties);
         }
 
         /// <summary>
@@ -178,15 +183,17 @@ namespace Com.Reseul.ASA.Samples.WayFindings
         public void NextStepWayFinding()
         {
             Initialize(false);
-          /*  while (transform.GetChild(2).childCount > 0)
+            while (transform.GetChild(2).childCount > 0)
             {
                 DestroyImmediate(transform.GetChild(2).GetChild(0).gameObject);
             }
-          */
+          
             Menu.ChangeStatus(BaseMenu.MODE_CLOSE);
             WayFindingManager.Instance.Initialize(true, basePointAnchorId, settingPointAnchor,
                 basePointAppProperties);
         }
+
+        
 
         /// <summary>
         ///     アプリケーションを終了します。
@@ -194,16 +201,21 @@ namespace Com.Reseul.ASA.Samples.WayFindings
         public void Exit()
         {
 #if UNITY_EDITOR
+            Menu.ChangeStatus(BaseMenu.MODE_COMPLETE);
+            Debug.Log("exit called");
             EditorApplication.isPlaying = false;
 #elif WINDOWS_UWP
+            Menu.ChangeStatus(BaseMenu.MODE_COMPLETE);
+            Debug.Log("exit called");
             Windows.ApplicationModel.Core.CoreApplication.Exit();
 #endif
+            Menu.ChangeStatus(BaseMenu.MODE_COMPLETE);
         }
 
         /// <summary>
         ///     Azure Spatial Anchorsサービスにアンカーを追加します。
         /// </summary>
-    public async void CreateAzureAnchor(int landmarkType)
+        public async void CreateAzureAnchor(int landmarkType)
         {
             try
             {
@@ -252,5 +264,11 @@ namespace Com.Reseul.ASA.Samples.WayFindings
         }
 
         #endregion
+        private void CloseContents()
+        {
+            //isLocateAnchors = false;
+            Menu.ChangeStatus(BaseMenu.MODE_CLOSE);
+            transform.GetChild(0).gameObject.SetActive(false);
+        }
     }
 }

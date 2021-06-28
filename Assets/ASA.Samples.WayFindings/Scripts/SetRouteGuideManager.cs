@@ -158,6 +158,16 @@ namespace Com.Reseul.ASA.Samples.WayFindings
             Menu.ChangeStatus(BaseMenu.MODE_INITIALIZE);
         }
 
+
+        public void NextStepLandmarkCreate()
+        {
+            Debug.Log("LandmarkCreate is called in BasepointSettingsManager");
+            CloseContents();
+            Menu.ChangeStatus(BaseMenu.MODE_CLOSE);
+            LandmarkCreateManager.Instance.Initialize(true, basePointAnchorId, settingPointAnchor,
+                basePointAppProperties);
+        }
+
         /// <summary>
         ///     次の処理ステップ（経路探索）へ進むための処理を実行します。
         /// </summary>
@@ -180,8 +190,12 @@ namespace Com.Reseul.ASA.Samples.WayFindings
         public void Exit()
         {
 #if UNITY_EDITOR
+            
+            Debug.Log("exit called");
             EditorApplication.isPlaying = false;
 #elif WINDOWS_UWP
+            
+            Debug.Log("exit called");
             Windows.ApplicationModel.Core.CoreApplication.Exit();
 #endif
         }
@@ -238,6 +252,12 @@ namespace Com.Reseul.ASA.Samples.WayFindings
             }
         }
 
-    #endregion
+        #endregion
+        private void CloseContents()
+        {
+            //isLocateAnchors = false;
+            Menu.ChangeStatus(BaseMenu.MODE_CLOSE);
+            transform.GetChild(0).gameObject.SetActive(false);
+        }
     }
 }

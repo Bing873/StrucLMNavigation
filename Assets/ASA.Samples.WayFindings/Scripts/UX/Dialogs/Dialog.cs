@@ -9,6 +9,7 @@ namespace Com.Reseul.ASA.Samples.WayFindings.UX.Dialogs
 {
     /// <summary>
     ///     ダイアログ出力のためのユーティリティクラス
+    ///     Utility class for dialog output
     /// </summary>
     public class Dialog : MonoBehaviour
     {
@@ -18,6 +19,7 @@ namespace Com.Reseul.ASA.Samples.WayFindings.UX.Dialogs
 
         /// <summary>
         ///     このクラスのインスタンスを取得します。
+        ///     Gets an instance of this class.
         /// </summary>
         private static Dialog Instance
         {
@@ -37,11 +39,12 @@ namespace Com.Reseul.ASA.Samples.WayFindings.UX.Dialogs
 
         /// <summary>
         ///     ダイアログを表示します
+        ///     Display a dialog
         /// </summary>
-        /// <param name="title">タイトル</param>
-        /// <param name="message">メッセージ</param>
-        /// <param name="buttonLabels">ボタンのラベル。最大2要素設定します。</param>
-        /// <param name="events">ボタン押下時のイベント</param>
+        /// <param name="title">title</param>
+        /// <param name="message">message</param>
+        /// <param name="buttonLabels">Button label. Set up to 2 elements.</param>
+        /// <param name="events">Event when the button is pressed</param>
         public static void OpenDialog(string title, string message, string[] buttonLabels, UnityAction[] events = null)
         {
             var dialogObj = Instantiate(Instance.dialog);

@@ -7,42 +7,43 @@ using UnityEngine;
 namespace Com.Reseul.ASA.Samples.WayFindings.SpatialAnchors
 {
     /// <summary>
-    ///     Azure Spatial Anchorsのサービスへのアクセスを行うプロキシクラス
+    ///     Proxy class for accessing Azure Spatial Anchors services
     /// </summary>
     /// <remarks>
-    ///     Azure Spatial AnchorsはUnity Editor上ではエラーで動作しないため、Unity Editor上はスタブで動作するようにこのクラスを提供しています。
+    ///     Azure Spatial Anchors does not work with errors on Unity Editor, so we provide this class to work with stubs on Unity Editor.
     /// </remarks>
     public class AnchorModuleProxy : MonoBehaviour
     {
         /// <summary>
-        ///     処理の途中経過を表示するためのログ出力用デリゲート。別途、<see cref="AnchorFeedbackScript" />内で呼出します。
+        ///     愁elegate for log output to display the progress of processing. Separately.<see cref="AnchorFeedbackScript" />Call within
         /// </summary>
-        /// <param name="description">メッセージ内容</param>
-        /// <param name="isOverWrite">直前のメッセージを上書きするかどうか。Trueの場合は上書きする</param>
-        /// <param name="isReset">直前のメッセージを削除するかどうか。Trueの場合はこれまでの出力を削除してから表示する</param>
+        /// <param name="description">Message content</param> 
+        /// <param name="isOverWrite">Whether to overwrite the previous message. Overwrite if True</param> 
+        /// <param name="isReset"> Whether to delete the previous message. If True, delete the previous output before displaying</param>
+
         public delegate void FeedbackDescription(string description, bool isOverWrite = false, bool isReset = false);
 
         public float DistanceInMeters => distanceInMeters;
 
-    #region Static Methods
+        #region Static Methods
 
         /// <summary>
-        ///     Azure Spatial Anchorsの処理を実行するクラスのインスタンスを取得します。
+        ///     Get an instance of the class that performs the processing of Azure Spatial Anchors.
         /// </summary>
         public static IAnchorModuleScript Instance
         {
             get
             {
 #if UNITY_EDITOR
-                // Unity Editor実行時にはスタブで処理を実行する
+                // Execute processing with stub when executing Unity Editor
                 var module = FindObjectsOfType<AnchorModuleScriptForStub>();
 #else
-            var module = FindObjectsOfType<AnchorModuleScript>();
+                var module = FindObjectsOfType<AnchorModuleScript>();
 #endif
                 if (module.Length == 1)
                 {
                     var proxy = FindObjectOfType<AnchorModuleProxy>();
-                    //Azure Spatial Anchors で利用するパラメータを設定します。
+                    //Set the parameters used by Azure Spatial Anchors
                     module[0].SetDistanceInMeters(proxy.distanceInMeters);
                     module[0].SetMaxResultCount(proxy.maxResultCount);
                     module[0].SetExpiration(proxy.Expiration);
@@ -62,14 +63,14 @@ namespace Com.Reseul.ASA.Samples.WayFindings.SpatialAnchors
         private void Start()
         {
 #if UNITY_EDITOR
-            // Unity Editor実行時はAzure Spatial Anchors本体のオブジェクトを無効化します。
+            // When running Unity Editor, disable the objects in Azure Spatial Anchors itself.
             transform.GetChild(0).gameObject.SetActive(false);
 #endif
         }
 
-    #endregion
+        #endregion
 
-    #region Inspector Properites
+        #region Inspector Properites
 
         [Header("NearbySetting")]
         [SerializeField]

@@ -15,65 +15,65 @@ namespace Com.Reseul.ASA.Samples.WayFindings.SpatialAnchors
     public class AnchorModuleScript : MonoBehaviour, IAnchorModuleScript
     {
         /// <summary>
-        ///     排他制御用オブジェクト
+        ///     Exclusive control object
         /// </summary>
         private static object lockObj = new object();
 
         /// <summary>
-        ///     Unityのメインスレッド上で実行したい処理を格納するキュー
+        ///     A queue that stores the processing you want to execute on the main thread of Unity
         /// </summary>
         private readonly Queue<Action> dispatchQueue = new Queue<Action>();
 
         /// <summary>
-        ///     Azure Spatial Anchorsから取得したAnchorの情報を格納するDictionary
+        ///     Dictionary that stores Anchor information obtained from Azure Spatial Anchors
         /// </summary>
         private readonly Dictionary<string, CloudSpatialAnchor> locatedAnchors =
             new Dictionary<string, CloudSpatialAnchor>();
 
         /// <summary>
-        ///     Azure Spatial Anchorsの検索時に設定する<see cref="AnchorLocateCriteria" />
+        ///     Set when searching Azure Spatial Anchors<see cref="AnchorLocateCriteria" />
         /// </summary>
         private AnchorLocateCriteria anchorLocateCriteria;
 
         /// <summary>
-        ///     Azure Spatial Anchorsの管理クラス
+        ///     Azure Spatial Anchors management class
         /// </summary>
         private SpatialAnchorManager cloudManager;
 
         /// <summary>
-        ///     Azure Spatial Anchors検索時に利用する監視クラス
+        ///     Monitoring class used when searching Azure Spatial Anchors
         /// </summary>
         private CloudSpatialAnchorWatcher currentWatcher;
 
         /// <summary>
-        ///     Azure Spatial Anchorsのパラメータ：アンカー周辺を検索する際の探索範囲（単位:m）
+        ///     Parameters of Azure Spatial Anchors: Search range when searching around the anchor (unit: m)
         /// </summary>
         private float distanceInMeters;
 
         /// <summary>
-        ///     Azure Spatial Anchorsのパラメータ：Spatial Anchor登録時のアンカーの寿命（単位:日）
+        ///     Parameters of Azure Spatial Anchors: Anchor life (unit: days) when registering Spatial Anchor
         /// </summary>
         private int expiration;
 
         /// <summary>
-        ///     特定のアンカーを中心に検索した際に見つかったアンカー一覧
+        ///     List of anchors found when searching around a specific anchor
         /// </summary>
         private List<string> findNearByAnchorIds = new List<string>();
 
         /// <summary>
-        ///     Azure Spatial Anchorsのパラメータ：アンカー周辺の検索時に取得するアンカーの上限数
+        ///     Azure Spatial Anchors parameter: Maximum number of anchors to get when searching around anchors
         /// </summary>
         private int maxResultCount;
 
         /// <summary>
-        ///     アンカー取得後に実行する個別処理を持つコントローラクラス
+        ///     Controller class with individual processing to be executed after anchor acquisition
         /// </summary>
         public IASACallBackManager CallBackManager { get; set; }
 
         #region Public Events
 
         /// <summary>
-        ///     処理状況を出力するイベント
+        ///     Event to output the processing status
         /// </summary>
         public event AnchorModuleProxy.FeedbackDescription OnFeedbackDescription;
 
@@ -82,7 +82,7 @@ namespace Com.Reseul.ASA.Samples.WayFindings.SpatialAnchors
         #region Internal Methods and Coroutines
 
         /// <summary>
-        ///     Unityのメインスレッド上で実行したい処理をキューに投入します。
+        ///     Queue the process you want to execute on the main thread of Unity
         /// </summary>
         /// <param name="updateAction"></param>
         private void QueueOnUpdate(Action updateAction)
@@ -109,12 +109,18 @@ namespace Com.Reseul.ASA.Samples.WayFindings.SpatialAnchors
 
                 // Azure Spatial Anchorsサービスを呼出したときに発生するイベントを割り当てます。
                 // Azure Spatial Anchorsから取得したアンカー情報をもとにアンカーの設置が完了した際に発生するイベント
+                // Assign events that occur when you call the Azure Spatial Anchors service.
+                // Event that occurs when anchor installation is completed based on the 
+                // anchor information obtained from Azure Spatial Anchors
                 cloudManager.AnchorLocated += CloudManager_AnchorLocated;
 
                 // Azure Spatial Anchorsから取得したアンカー設置処理がすべて完了すると呼ばれるイベント
+                // Event called that all anchor installation process obtained from Azure Spatial
+                // Anchors is completed
                 cloudManager.LocateAnchorsCompleted += CloudManager_LocateAnchorsCompleted;
 
                 // Azure Spatial Anchorsへの検索条件を設定するクラスのインスタンス化
+                // Instantiate a class that sets search criteria for Azure Spatial Anchors
                 anchorLocateCriteria = new AnchorLocateCriteria();
             }
             catch (Exception e)
@@ -132,6 +138,7 @@ namespace Com.Reseul.ASA.Samples.WayFindings.SpatialAnchors
             try
             {
                 // Unityのメインスレッド上で実行したい処理をキューから取り出し処理を開始する。
+                // Dequeue the process you want to execute on the main thread of Unity and start the process.
                 lock (dispatchQueue)
                 {
                     if (dispatchQueue.Count > 0)
@@ -149,6 +156,7 @@ namespace Com.Reseul.ASA.Samples.WayFindings.SpatialAnchors
 
         /// <summary>
         ///     オブジェクトの後処理（廃棄）を実施します。
+        ///     Perform post-processing (discard) of the object
         /// </summary>
         public void OnDestroy()
         {
@@ -236,6 +244,9 @@ namespace Com.Reseul.ASA.Samples.WayFindings.SpatialAnchors
         /// <summary>
         ///     Azure Spatial Anchorsから取得済みのSpatial AnchorのAppPropertiesを一括で変更します。
         ///     キーがすでに存在する場合はreplaceパラメータの値に応じて置換え、追記を切り替えて処理を実施します。
+        ///     Change the App Properties of Spatial Anchor obtained from Azure Spatial Anchors at once.
+        ///     If the key already exists, replace it according to the value of the replace parameter, 
+        ///     switch the append, and execute the process.
         /// </summary>
         /// <param name="key">AppPropertiesのキー</param>
         /// <param name="val">キーに対応する値</param>
@@ -259,6 +270,7 @@ namespace Com.Reseul.ASA.Samples.WayFindings.SpatialAnchors
 
         /// <summary>
         ///     Azure Spatial Anchorsサービスにアンカーを追加します。
+        ///     Add an anchor to the Azure Spatial Anchors service.
         /// </summary>
         /// <param name="theObject">Spatial Anchorの情報として登録する現実空間に設置したオブジェクト</param>
         /// <param name="appProperties">Spatial Anchorに含める情報</param>
@@ -348,6 +360,7 @@ namespace Com.Reseul.ASA.Samples.WayFindings.SpatialAnchors
 
         /// <summary>
         ///     指定されたAnchorIdで登録されたAnchorを中心に他のアンカーが存在するか検索を実施します。
+        ///     Searches for the existence of other anchors centered on the Anchor registered with the specified AnchorId.
         /// </summary>
         /// <param name="anchorId">基準になるAnchorId</param>
         public void FindNearByAnchor(string anchorId)
@@ -359,6 +372,7 @@ namespace Com.Reseul.ASA.Samples.WayFindings.SpatialAnchors
                 OutputLog("Trying to find near by Azure anchor");
 
                 // このクラスで管理している取得済みSpatial Anchorの一覧の中に指定のAnchorが存在するか確認します。
+                // Check if the specified Anchor exists in the list of acquired Spatial Anchors managed by this class.
                 if (!locatedAnchors.ContainsKey(anchorId))
                 {
                     OutputLog($"Not found anchor.id:{anchorId}.", LogType.Error);
@@ -386,6 +400,11 @@ namespace Com.Reseul.ASA.Samples.WayFindings.SpatialAnchors
                 // Watcherを生成し別スレッド上で非同期処理が実施されます。
                 // Anchorの探索と配置が完了した情報から順次AnchorLocatedイベントが発生します。
                 // 取得したSpatial Anchorの設置がすべて完了するとLocatedAnchorsCompleteイベントが発生します。
+                // Start searching for anchors. This process is time consuming, so in Azure Spatial Anchors
+                // Generate Watcher and perform asynchronous processing on another thread.
+                // AnchorLocated event is generated sequentially from the information that Anchor search and placement is completed.
+                // When all the acquired Spatial Anchor installation is completed, the LocatedAnchorsComplete event will be fired.
+               
                 if (cloudManager != null && cloudManager.Session != null)
                 {
                     currentWatcher = cloudManager.Session.CreateWatcher(anchorLocateCriteria);
@@ -407,6 +426,7 @@ namespace Com.Reseul.ASA.Samples.WayFindings.SpatialAnchors
 
         /// <summary>
         ///     指定されたAnchorIdに対応するSpatial AnchorをAzure Spatial Anchorsサービスから取得します。
+        ///     Gets the Spatial Anchor corresponding to the specified AnchorId from the Azure Spatial Anchors service.
         /// </summary>
         /// <param name="azureAnchorIds"></param>
         public void FindAzureAnchorById(params string[] azureAnchorIds) //wayfinding bing
@@ -443,6 +463,10 @@ namespace Com.Reseul.ASA.Samples.WayFindings.SpatialAnchors
                 // Watcherを生成し別スレッド上で非同期処理が実施されます。
                 // Anchorの探索と配置が完了した情報から順次AnchorLocatedイベントが発生します。
                 // 取得したSpatial Anchorの設置がすべて完了するとLocatedAnchorsCompleteイベントが発生します。
+                // Start searching for anchors. This process is time consuming, so in Azure Spatial Anchors
+                // Generate Watcher and perform asynchronous processing on another thread.
+                // AnchorLocated event is generated sequentially from the information that Anchor search and placement is completed.
+                // When all the acquired Spatial Anchor installation is completed, the LocatedAnchorsComplete event will be fired.
                 if (cloudManager != null && cloudManager.Session != null)
                 {
                     currentWatcher = cloudManager.Session.CreateWatcher(anchorLocateCriteria);
@@ -466,6 +490,7 @@ namespace Com.Reseul.ASA.Samples.WayFindings.SpatialAnchors
 
         /// <summary>
         ///     Azure Spatial Anchorsサービスから取得済みのすべてのアンカーを削除します。
+        ///     Remove all acquired anchors from the Azure Spatial Anchors service.
         /// </summary>
         public async void DeleteAllAzureAnchor()
         {
@@ -495,6 +520,7 @@ namespace Com.Reseul.ASA.Samples.WayFindings.SpatialAnchors
 
         /// <summary>
         ///     Anchor生成処理を実行するためのコントローラを設定します。
+        ///     Set the controller to execute the Anchor generation process
         /// </summary>
         /// <param name="iasaCallBackManager"></param>
         public void SetASACallBackManager(IASACallBackManager iasaCallBackManager)
@@ -631,6 +657,7 @@ namespace Com.Reseul.ASA.Samples.WayFindings.SpatialAnchors
 
         /// <summary>
         ///     Spatial Anchorの設置が完了した場合に発生するイベントで実行する処理
+        ///     Process to be executed in the event that occurs when the installation of Spatial Anchor is completed
         /// </summary>
         /// <param name="sender">sender</param>
         /// <param name="args">args</param>
@@ -644,6 +671,9 @@ namespace Com.Reseul.ASA.Samples.WayFindings.SpatialAnchors
                     //FindNearbyAnchorsでAnchorを検索した場合AppPropertiesが空になります（バグ？）
                     //このため、FindNearbyAnchorsの検索で見つかったアンカーはIDのみ集約しすべての配置が完了後
                     //FindAzureAnchorByIdで再取得をかける。この処理はCloudManager_LocateAnchorsCompleted内で実施します。
+                    // If you search for Anchor with FindNearbyAnchors, AppProperties will be empty (bug?)
+                    // Therefore, the anchors found by the FindNearbyAnchors search are aggregated only by the ID, and after all the placement is completed.
+                    // Re-acquire with FindAzureAnchorById. This process is performed within CloudManager_LocateAnchorsCompleted.
                     if (IsNearbyMode())
                     {
                         var id = args.Anchor.Identifier;
@@ -675,6 +705,7 @@ namespace Com.Reseul.ASA.Samples.WayFindings.SpatialAnchors
                             GameObject point = null;
 
                             // Spatial Anchorに対応するUnityオブジェクトを生成する処理を呼出します。
+                            // Call the process to create the Unity object corresponding to Spatial Anchor.
                             if (CallBackManager != null && !CallBackManager.OnLocatedAnchorObject(
                                     currentCloudAnchor.Identifier,
                                     locatedAnchors[currentCloudAnchor.Identifier].AppProperties, out point))
@@ -732,6 +763,7 @@ namespace Com.Reseul.ASA.Samples.WayFindings.SpatialAnchors
 
         /// <summary>
         ///     検索したすべてのSpatial Anchorの設置が完了した後実行する処理。
+        ///     The process to be executed after the installation of all the searched Spatial Anchors is completed.
         /// </summary>
         /// <param name="sender">sender</param>
         /// <param name="args">args</param>
@@ -743,6 +775,8 @@ namespace Com.Reseul.ASA.Samples.WayFindings.SpatialAnchors
                 {
                     // NearbyAnchorで取得した場合、AppPropertiesの情報が取得できないため
                     // 一度配置できたSpatial AnchorのAnchorIdを保持しておき再度ID指定でアンカーの取得を実施します。
+                    // If you get it with NearbyAnchor, you can't get the AppProperties information.
+                    // Hold the AnchorId of the Spatial Anchor that was once placed, and acquire the anchor again by specifying the ID.
                     QueueOnUpdate(() => OutputLog("Get the spatial anchors with Anchor App Properties.")); //always called bing
                     QueueOnUpdate(() => FindAzureAnchorById(findNearByAnchorIds.ToArray()));
                 }
@@ -754,6 +788,7 @@ namespace Com.Reseul.ASA.Samples.WayFindings.SpatialAnchors
                     if (!args.Cancelled)
                     {
                         // 検索したすべてのSpatial Anchorの設置が完了した後実行します。
+                        // Execute after all the searched Spatial Anchors have been installed.
                         QueueOnUpdate(() => CallBackManager?.OnLocatedAnchorComplete());
                     }
                     else
@@ -771,6 +806,7 @@ namespace Com.Reseul.ASA.Samples.WayFindings.SpatialAnchors
 
         /// <summary>
         ///     NearbyAnchorでの検索かどうかをチェックします。
+        ///     Check if the search is in Nearby Anchor.
         /// </summary>
         /// <returns>NearbyAnchorでの検索はtrue</returns>
         private bool IsNearbyMode()
