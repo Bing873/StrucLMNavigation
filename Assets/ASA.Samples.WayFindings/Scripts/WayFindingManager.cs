@@ -61,12 +61,15 @@ namespace Com.Reseul.ASA.Samples.WayFindings
 
         [Tooltip("Set a GameObject of RouteGuideInformation.")]
         public RouteGuideInformation RouteInfo;
+        
+        [Tooltip("Set a GameObject of LandmarkCreateInformation.")]
+        public LandmarkCreateInformation LandmarkInfo;
 
         [Tooltip("Set a GameObject of Select Destination Menu.")]
         public SelectDestinationMenu SelectDestinationMenu;
 
         //[Tooltip("Set a GameObject of Select Landmarks.")]
-       // public SelectDestinationMenu SelectDestinationMenu;
+        // public SelectDestinationMenu SelectDestinationMenu;
 
         #endregion
 
@@ -75,6 +78,8 @@ namespace Com.Reseul.ASA.Samples.WayFindings
         /// <summary>
         ///     Spatial Anchorの設置完了時に実行する処理
         ///     Spatial Anchorの設置がすべて完了した場合に実行されます。
+        ///     Process to be executed when the installation of Spatial Anchor is completed
+        ///     Executed when all installation of Spatial Anchor is completed.
         /// </summary>
         public void OnLocatedAnchorComplete()
         {
@@ -106,7 +111,37 @@ namespace Com.Reseul.ASA.Samples.WayFindings
                         }
                     }
                 }
+
+               // methods of LandmarkInfo                
+                foreach (var currentlm in LandmarkInfo.LocatedAnchors.Keys)
+                {
+                    Debug.Log(
+                        $"Current Landmark Key:{currentlm}");
+                    //var appProperties = LandmarkInfo.LocatedAnchors[currentlm].AppProperties;
+                    //if (!LandmarkInfo.LocatedAnchors[current].IsLinkLineCreated)
+                    //{
+                    //    RouteInfo.LocatedAnchors[current].IsLinkLineCreated = true;
+                    //    var dest = LandmarkInfo.LocatedAnchors[current].AnchorObject;
+                    //    if (appProperties.ContainsKey(RouteGuideInformation.PREV_ANCHOR_ID))
+                    //    {
+                    //        var key = appProperties[RouteGuideInformation.PREV_ANCHOR_ID];
+                    //        if (RouteInfo.LocatedAnchors.TryGetValue(key, out var anchorInfo))
+                    //        {
+                    //            var pointObj = anchorInfo.AnchorObject.GetComponent<DestinationPointAnchor>();
+                    //            pointObj?.DisabledEffects();
+                    //            var basePointObj = anchorInfo.AnchorObject.GetComponent<SettingPointAnchor>();
+                    //            basePointObj?.DisabledEffects();
+
+                    //        }
+                    //    }
+                    //}
+                }
+
+
+
+                //OnLocatedAnchorObjectLM();
             }
+
             catch (Exception e)
             {
                 Debug.Log(e);
@@ -117,6 +152,8 @@ namespace Com.Reseul.ASA.Samples.WayFindings
         /// <summary>
         ///     Spatial Anchorの可視化に必要なオブジェクトの生成を行います。
         ///     Spatial Anchorの設置が完了した場合に発生するイベント内で実行されます。
+        ///     Creates the objects required for visualization of the spatial Anchor.
+        ///     Executed in the event that occurs when the installation of Spatial Anchor is completed.
         /// </summary>
         /// <param name="identifier">AnchorId</param>
         /// <param name="appProperties">Spatial Anchorに含まれるAppProperties</param>
@@ -128,11 +165,13 @@ namespace Com.Reseul.ASA.Samples.WayFindings
             try
             {
                 appProperties.TryGetValue(RouteGuideInformation.ANCHOR_TYPE, out var anchorType);
+               // Debug.Log($"The point Type is: {anchorType} and Anchor_TYPE is {RouteGuideInformation.ANCHOR_TYPE}");
 
                 var destinations = new string[0];
                 if (appProperties.TryGetValue(RouteGuideInformation.DESTINATION_TITLE, out var destination))
                 {
                     destinations = destination.Split(',');
+                    //Debug.Log($"The destination is: {RouteGuideInformation.DESTINATION_TITLE} and out dest is {destination}");
                 }
 
                 // 指定ルート以外のアンカー情報に対しては可視化を行わない。
@@ -178,6 +217,62 @@ namespace Com.Reseul.ASA.Samples.WayFindings
                     }
                 }
 
+                //landmark object generation
+                //appProperties.TryGetValue(RouteGuideInformation.ANCHOR_TYPE, out var anchorType);
+                //// Debug.Log($"The point Type is: {anchorType} and Anchor_TYPE is {RouteGuideInformation.ANCHOR_TYPE}");
+
+                //var destinations = new string[0];
+                //if (appProperties.TryGetValue(RouteGuideInformation.DESTINATION_TITLE, out var destination))
+                //{
+                //    destinations = destination.Split(',');
+                //    //Debug.Log($"The destination is: {RouteGuideInformation.DESTINATION_TITLE} and out dest is {destination}");
+                //}
+
+                //// 指定ルート以外のアンカー情報に対しては可視化を行わない。
+                //if (!destinations.Any(x => x.Equals(Destination)))
+                //{
+                //    gameObject = null;
+                //    return false;
+                //}
+
+                //DestinationPointAnchor point;
+
+                //if (!RouteInfo.LocatedAnchors.ContainsKey(identifier))
+                //{
+                //    //アンカーの可視化が完了していない場合はアンカーを生成する。
+                //    point = AnchorGenerateFactory.GenerateDestinationPointAnchor(RouteInfo.RootPointObjects);
+                //    gameObject = point.gameObject;
+
+                //    lock (lockObj)
+                //    {
+                //        RouteInfo.LocatedAnchors.Add(identifier,
+                //            new RouteGuideInformation.AnchorInfo(appProperties, point.gameObject,
+                //                currentAnchorId.Equals(RouteGuideInformation.ANCHOR_ID_NOT_INITIALIZED)));
+                //    }
+                //}
+                //else
+                //{
+                //    //すでにアンカーが可視化されている場合はそのオブジェクトを取得する。
+                //    gameObject = RouteInfo.LocatedAnchors[identifier].AnchorObject;
+                //    point = gameObject.GetComponent<DestinationPointAnchor>();
+
+                //    RouteInfo.LocatedAnchors[identifier] =
+                //        new RouteGuideInformation.AnchorInfo(appProperties, gameObject,
+                //            currentAnchorId.Equals(RouteGuideInformation.ANCHOR_ID_NOT_INITIALIZED));
+                //}
+
+                //currentAnchorId = identifier;
+                //if (point != null)
+                //{
+                //    point.Identifier = identifier;
+                //    if (RouteGuideInformation.ANCHOR_TYPE_DESTINATION.Equals(anchorType))
+                //    {
+                //        point.DestinationTitle = destination;
+                //    }
+                //}
+
+
+
                 return true;
             }
             catch (Exception e)
@@ -198,7 +293,7 @@ namespace Com.Reseul.ASA.Samples.WayFindings
             {
                 if (anchorId == null || anchorObj == null || appProperties == null)
                 {
-                    Debug.LogWarning("null reference the base point anchor information.");
+                    Debug.LogWarning("null reference the base point anchor information in wayfindingmanager.");
                     return;
                 }
 
@@ -212,6 +307,8 @@ namespace Com.Reseul.ASA.Samples.WayFindings
                         {
                             Instruction?.SetActive(enabled);
                             RouteInfo?.gameObject.SetActive(enabled);
+                            LandmarkInfo?.gameObject.SetActive(enabled);
+                            //Debug.Log("LandmarkInfo is activated");
                             if (basePointAppProperties.TryGetValue(RouteGuideInformation.DESTINATION_TITLE,
                                 out var rowData))
                             {
@@ -225,15 +322,74 @@ namespace Com.Reseul.ASA.Samples.WayFindings
                     });
 
                 basePointAnchorId = anchorId;
+                string basePointAnchorIdLM = anchorId;
                 settingPointAnchor = anchorObj;
+
+                Debug.Log($"WFmangager and route called and basepointanchorid is {basePointAnchorId}");
                 var locatedAnchors = RouteInfo.LocatedAnchors;
                 if (!locatedAnchors.ContainsKey(basePointAnchorId))
                 {
                     locatedAnchors.Add(basePointAnchorId,
                         new RouteGuideInformation.AnchorInfo(appProperties, settingPointAnchor.gameObject));
+                    //Debug.Log($"RouteInfo Length is {RouteInfo.LocatedAnchors.Keys.Length}");
+                }
+                foreach (var current in RouteInfo.LocatedAnchors.Keys)
+                {
+                    Debug.Log(
+                        $"Current:{current} is found");
+                    //var appProperties = LandmarkInfo.LocatedAnchors[currentLM].AppProperties;
+                    //var dest = LandmarkInfo.LocatedAnchors[currentLM].AnchorObject;
+
+                }
+
+                Debug.Log($"wfmangager and lm called and basepointanchorid is {basePointAnchorIdLM}");
+
+                var locatedAnchorslm = LandmarkInfo.LocatedAnchors;
+                if (!locatedAnchorslm.ContainsKey(basePointAnchorIdLM))
+                {
+                    locatedAnchorslm.Add(basePointAnchorIdLM,
+                        new LandmarkCreateInformation.AnchorInfo(appProperties, settingPointAnchor.gameObject));
+                }
+
+                LandmarkPointAnchor pointlm;
+                foreach (var currentLM in LandmarkInfo.LocatedAnchors.Keys)
+                {
+                    Debug.Log(
+                        $"current:{currentLM} is found");
+                    pointlm = AnchorGenerateFactory.GenerateVSELandmarkPointAnchor();
+                    var appproperties = LandmarkInfo.LocatedAnchors[currentLM].AppProperties;
+                    var dest = LandmarkInfo.LocatedAnchors[currentLM].AnchorObject;
+
                 }
 
                 basePointAppProperties = appProperties;
+
+                
+            }
+            catch (Exception e)
+            {
+                Debug.Log(e);
+                throw;
+            }
+        }
+        #region Landmark Methods
+
+        /// <summary>
+        ///     Process to be executed when the installation of Spatial Anchor is completed and anchors on the way found
+        ///     Executed when all installation of Spatial Anchor is completed.
+        /// </summary>
+        public void OnLocatedAnchorCompleteLM()
+        {
+            try
+            {
+                foreach (var current in LandmarkInfo.LocatedAnchors.Keys)
+                {
+                    Debug.Log(
+                        $"Current:{current} is found");
+                    var appProperties = LandmarkInfo.LocatedAnchors[current].AppProperties;
+                    var dest = LandmarkInfo.LocatedAnchors[current].AnchorObject;
+                    
+                }
             }
             catch (Exception e)
             {
@@ -242,6 +398,71 @@ namespace Com.Reseul.ASA.Samples.WayFindings
             }
         }
 
+        /// <summary>
+        ///     Spatial Anchorの可視化に必要なオブジェクトの生成を行います。
+        ///     Spatial Anchorの設置が完了した場合に発生するイベント内で実行されます。
+        ///     Creates the objects required for visualization of the patial Anchor.
+        ///     Executed in the event that occurs when the installation of Spatial Anchor is completed.
+        /// </summary>
+        /// <param name="identifier">AnchorId</param>
+        /// <param name="appProperties">Spatial Anchorに含まれるAppProperties</param>
+        /// <param name="gameObject">可視化に利用するオブジェクト</param>
+        /// <returns>アンカーの設置対象か。trueの場合設置対象</returns>
+        public bool OnLocatedAnchorObjectLM(string identifier,
+            IDictionary<string, string> appProperties, out GameObject gameObjectlm)
+        {
+            try
+            {
+                //locateLandmarks
+                appProperties.TryGetValue(LandmarkCreateInformation.LM_TYPE, out var lmType);
+                Debug.Log($"The landmark Type is: {lmType} and LM_TYPE is {LandmarkCreateInformation.LM_TYPE}");
+                LandmarkPointAnchor lmpoint = null;
+                //if (!LandmarkInfo.LocatedAnchors.ContainsKey(identifier))
+                //{
+
+                //If the visualization of the anchor is not completed, an anchor is generated.
+                //    switch (lmType)
+                //    {
+                //        case VSE:
+                //            lmpoint = AnchorGenerateFactory.GenerateVSELandmarkPointAnchor();
+                //        case SF:
+                //            lmpoint = AnchorGenerateFactory.GenerateSFLandmarkPointAnchor();
+                //        case DF:
+                //            lmpoint = AnchorGenerateFactory.GenerateDFLandmarkPointAnchor();
+                //    }
+
+                gameObjectlm = lmpoint.gameObject;
+
+                //    lock (lockObj)
+                //    {
+                //        LandmarkInfo.LocatedAnchors.Add(identifier,
+                //            new LandmarkCreateInformation.AnchorInfo(appProperties, point.gameObject));
+                //    }
+                //}
+                //else
+                //{
+                // if the anchor is already visible, get that object.
+                gameObjectlm = LandmarkInfo.LocatedAnchors[identifier].AnchorObject;
+                lmpoint = gameObjectlm.GetComponent<LandmarkPointAnchor>();
+
+                LandmarkInfo.LocatedAnchors[identifier] =
+                new LandmarkCreateInformation.AnchorInfo(appProperties, gameObjectlm);
+                //    //}
+
+                //    currentAnchorId = identifier;
+                //}
+                return true;
+            }
+            catch (Exception e)
+            {
+                Debug.Log(e);
+                throw;
+            }
+        }
+
+        // locate landmarks
+
+        #endregion
 
         /// <summary>
         ///     アプリケーションを終了します。

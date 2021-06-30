@@ -57,8 +57,8 @@ namespace Com.Reseul.ASA.Samples.WayFindings
 
         #region Inspector Properites
 
-        [Tooltip("Set a GameObject of Landmark Collection.")]
-        public GameObject LandmarkCollection;
+        //[Tooltip("Set a GameObject of Landmark Collection.")]
+        //public GameObject LandmarkCollection;
 
         [Tooltip("Set a GameObject of Instruction.")]
         public GameObject Instruction;
@@ -90,7 +90,7 @@ namespace Com.Reseul.ASA.Samples.WayFindings
 
                 basePointAnchorId = anchorId;
                 CurrentAnchorId = basePointAnchorId;
-                Debug.Log("LCManager is called and AnchorID is not null");
+                Debug.Log($"LCManager is called and AnchorID is {anchorId} not null");
                 settingPointAnchor = anchorObj;
                 basePointAppProperties = appProperties;
 
@@ -101,7 +101,7 @@ namespace Com.Reseul.ASA.Samples.WayFindings
                         new UnityAction(() =>
                         {
                             Instruction?.SetActive(enabled);
-                            LandmarkCollection?.SetActive(enabled);
+                           // LandmarkCollection?.SetActive(enabled);
                             Menu.ChangeStatus(BaseMenu.MODE_INITIALIZE);
                         })
                     });
@@ -134,24 +134,26 @@ namespace Com.Reseul.ASA.Samples.WayFindings
                 switch (landmarkType)
                 {
                     case 0:
-                        Debug.Log("LMCreate Mangager calls to create VSE_LM");
+                        //Debug.Log("LMCreate Mangager calls to create VSE_LM");
                         landm = AnchorGenerateFactory.GenerateVSELandmarkPointAnchor(); //(SettingPointAnchor.AnchorMode.Landmark,LandmarkPointAnchor.LandmarkType.VSLandmark);
                        // Debug.Log("LMCreate Mangager calls to create VSE_LM");
                         break;
                     case 1:
                         landm = AnchorGenerateFactory.GenerateSFLandmarkPointAnchor();// (SettingPointAnchor.AnchorMode.Landmark, LandmarkPointAnchor.LandmarkType.SFLandmark);
-                        Debug.Log("LMCreate Mangager calls to create SF_LM");
+                       // Debug.Log("LMCreate Mangager calls to create SF_LM");
                         break;
                     case 2:
                         landm = AnchorGenerateFactory.GenerateDFLandmarkPointAnchor();// (SettingPointAnchor.AnchorMode.Landmark, LandmarkPointAnchor.LandmarkType.DFLandmark);
-                        Debug.Log("LMCreate Mangager calls to create DF_LM"); 
+                       // Debug.Log("LMCreate Mangager calls to create DF_LM"); 
                         break;                    
                 }
 
                 currentAnchorObject = landm.gameObject;
-                currentAnchorObject.transform.parent = LandmarkCollection.transform;
+                //currentAnchorObject.transform.parent = LandmarkCollection.transform;
                 currentAnchorObject.transform.position =
                     Camera.main.transform.position + Camera.main.transform.forward * 1f;
+
+               
             }
             catch (Exception e)
             {
@@ -183,11 +185,6 @@ namespace Com.Reseul.ASA.Samples.WayFindings
         public void NextStepWayFinding()
         {
             Initialize(false);
-            while (transform.GetChild(2).childCount > 0)
-            {
-                DestroyImmediate(transform.GetChild(2).GetChild(0).gameObject);
-            }
-          
             Menu.ChangeStatus(BaseMenu.MODE_CLOSE);
             WayFindingManager.Instance.Initialize(true, basePointAnchorId, settingPointAnchor,
                 basePointAppProperties);
@@ -221,29 +218,37 @@ namespace Com.Reseul.ASA.Samples.WayFindings
             {
                 // Then we create a new local cloud anchor
                 var appProperties = new Dictionary<string, string>();
+  
 
                 switch (landmarkType)
                 {
                     case 0://LandmarkType.VSLandmark:
-                        appProperties.Add(CurrentAnchorId, LandmarkCreateInformation.LM_TYPE_VSE);
-                        Debug.Log("VSElandmark Information created");
+                        appProperties.Add(LandmarkCreateInformation.LM_TYPE, LandmarkCreateInformation.LM_TYPE_VSE);
+                        Debug.Log($"VSElandmark Information created and key is {CurrentAnchorId} with Typevalue is {LandmarkCreateInformation.LM_TYPE_VSE} 1");
+                        appProperties.Add(LandmarkCreateInformation.ANCHOR_ID, CurrentAnchorId);
+                        Debug.Log($"VSElandmark Information created and key is {CurrentAnchorId} with Typevalue is {LandmarkCreateInformation.LM_TYPE_VSE} 2");
                         break;
                     case 1:// LandmarkType.SFLandmark:
-                        appProperties.Add(CurrentAnchorId, LandmarkCreateInformation.LM_TYPE_SF);
-                        Debug.Log("SFlandmark Information created");
+                        appProperties.Add(LandmarkCreateInformation.LM_TYPE, LandmarkCreateInformation.LM_TYPE_SF);
+                        appProperties.Add(LandmarkCreateInformation.ANCHOR_ID, CurrentAnchorId);
+                        Debug.Log($"SFlandmark Information created and key is {CurrentAnchorId} with Typevalue is {LandmarkCreateInformation.LM_TYPE_SF}");
+                        Debug.Log($"Landmark include {appProperties.Count} anchors");
+                        //Debug.Log("SFlandmark Information created");
                         break;
                     case 2:// LandmarkType.DFLandmark:
-                        appProperties.Add(CurrentAnchorId, LandmarkCreateInformation.LM_TYPE_DF);
+                        appProperties.Add(LandmarkCreateInformation.LM_TYPE, LandmarkCreateInformation.LM_TYPE_DF);
+                        appProperties.Add(LandmarkCreateInformation.ANCHOR_ID, CurrentAnchorId);
+                        Debug.Log($"SFlandmark Information created and key is {CurrentAnchorId} with Typevalue is {LandmarkCreateInformation.LM_TYPE_DF}");
+                        Debug.Log($"Landmark include {appProperties.Count} anchors");
 
                         Debug.Log("DFlandmark Information created");
                         break;
                 }
 
-               // appProperties.Add(LandmarkCreateInformation.CurrentAnchorId, LandmarkCreateInformation.LM_Type);
-
                 var identifier = await AnchorModuleProxy.Instance.CreateAzureAnchor(currentAnchorObject, appProperties);
 
-
+                Debug.Log($"In total, Landmark include {appProperties.Keys} anchors");
+                foreach (var anchorkey in appProperties.Keys){ Debug.Log($"anchor {anchorkey} is {appProperties[anchorkey]}"); }
                 if (identifier == null)
                 {
                     return;
@@ -254,7 +259,9 @@ namespace Com.Reseul.ASA.Samples.WayFindings
                 point.DisabledEffects();
 
                 Menu.ChangeStatus(BaseMenu.MODE_INITIALIZE);
-                                
+               
+
+
             }
             catch (Exception e)
             {

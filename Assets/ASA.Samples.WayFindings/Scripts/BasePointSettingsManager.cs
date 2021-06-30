@@ -139,6 +139,7 @@ namespace Com.Reseul.ASA.Samples.WayFindings
 
                 // アンカーの種別を中継点に設定します。
                 appProperties.Add(RouteGuideInformation.ANCHOR_TYPE, RouteGuideInformation.ANCHOR_TYPE_POINT);
+                Debug.Log($"RouteGuideInformation.ANCHOR_TYPE is {RouteGuideInformation.ANCHOR_TYPE} \nand RouteGuideInformation.ANCHOR_TYPE_POINT is {RouteGuideInformation.ANCHOR_TYPE_POINT}");
                 // 基点のアンカーとなるため接続するアンカーをANCHOR_ID_NOT_INITIALIZEDで設定します。
                 appProperties.Add(RouteGuideInformation.PREV_ANCHOR_ID,
                     RouteGuideInformation.ANCHOR_ID_NOT_INITIALIZED);

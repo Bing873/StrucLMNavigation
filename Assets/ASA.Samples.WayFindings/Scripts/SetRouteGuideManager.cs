@@ -161,11 +161,12 @@ namespace Com.Reseul.ASA.Samples.WayFindings
 
         public void NextStepLandmarkCreate()
         {
-            Debug.Log("LandmarkCreate is called in BasepointSettingsManager");
+            Debug.Log($"LandmarkCreate is called in BasepointSettingsManager and based point id is {basePointAnchorId}");
             CloseContents();
             Menu.ChangeStatus(BaseMenu.MODE_CLOSE);
             LandmarkCreateManager.Instance.Initialize(true, basePointAnchorId, settingPointAnchor,
                 basePointAppProperties);
+
         }
 
         /// <summary>
@@ -216,6 +217,7 @@ namespace Com.Reseul.ASA.Samples.WayFindings
                         : RouteGuideInformation.ANCHOR_TYPE_POINT);
 
                 appProperties.Add(RouteGuideInformation.PREV_ANCHOR_ID, CurrentAnchorId);
+                Debug.Log($"Set Route include {appProperties.Count} anchors");
 
                 var identifier = await AnchorModuleProxy.Instance.CreateAzureAnchor(currentAnchorObject, appProperties);
 
@@ -228,7 +230,7 @@ namespace Com.Reseul.ASA.Samples.WayFindings
                 CurrentAnchorId = identifier;
                 var point = currentAnchorObject.GetComponent<SettingPointAnchor>();
                 point.DisabledEffects();
-
+                
                 if (isDestination)
                 {
                     var destinationTitle = point.Text;
@@ -237,13 +239,21 @@ namespace Com.Reseul.ASA.Samples.WayFindings
 #endif
                     AnchorModuleProxy.Instance.UpdatePropertiesAll(RouteGuideInformation.DESTINATION_TITLE,
                         destinationTitle, false);
+                    Debug.Log($"Set Route include {appProperties.Count} anchors in if");
+                    foreach (var anchorkey in appProperties.Keys)
+                    {
+                        Debug.Log($"anchor {anchorkey} is {appProperties[anchorkey]}");
+                    }
 
-                    Menu.ChangeStatus(BaseMenu.MODE_COMPLETE);
+                        Menu.ChangeStatus(BaseMenu.MODE_COMPLETE);
                 }
                 else
                 {
+                    Debug.Log($"Set Route include {appProperties.Count} anchors in else");
                     Menu.ChangeStatus(BaseMenu.MODE_INITIALIZE);
                 }
+                Debug.Log($"In total, Set Route include {appProperties.Count} anchors");
+
             }
             catch (Exception e)
             {

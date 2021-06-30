@@ -77,6 +77,7 @@ namespace Com.Reseul.ASA.Samples.WayFindings.Factories
         /// <returns></returns>
         public static SettingPointAnchor GenerateSettingsPointAnchor(SettingPointAnchor.AnchorMode mode)
         {
+            Debug.Log($" a {mode} point is generated");
             var obj = Instantiate(InstanceObje.settingsPointAnchor);
             obj.SetAnchorMode(mode);
             return obj;

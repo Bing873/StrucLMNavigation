@@ -29,6 +29,8 @@ namespace Com.Reseul.ASA.Samples.WayFindings
         /// </summary>
         public const string LM_TYPE_SF = "SF";
 
+        public const string ANCHOR_ID = "AnchorID";
+
         /// <summary>
         ///      A constant that represents the type of anchor (DF)
         /// </summary>
@@ -38,6 +40,8 @@ namespace Com.Reseul.ASA.Samples.WayFindings
         ///     リンクする直前のAnchorIdが未設定であることを表す定数
         /// </summary>
         public const string ANCHOR_ID_NOT_INITIALIZED = "NotInitialized";
+
+
 
         /// <summary>
         ///     Gets / sets the current anchor Id.
